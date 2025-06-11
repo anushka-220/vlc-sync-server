@@ -1,76 +1,27 @@
-// const { Server } = require('socket.io');
-// const express = require('express');
-// const http = require('http');
-// const path = require('path'); // Make sure path is imported
-
-// const app = express();
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: "*",
-//     methods: ["GET", "POST"]
-//   }
-// });
-
-// const PORT = 3000;
-
-// // --- IMPORTANT PATH CHANGE HERE ---
-// // Define the absolute path to your 'app' directory
-// const appDirPath = '/Users/anushka/vlc-sync-app'; // Explicitly define the absolute path
-
-// // Serve static files from the 'app' directory
-// app.use(express.static(appDirPath));
-
-// // Serve index.html specifically for the root path
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(appDirPath, 'index.html'));
-// });
-// // --- END IMPORTANT PATH CHANGE ---
-
-// console.log(`Socket.IO server running at http://localhost:${PORT}`);
-
-// io.on('connection', (socket) => {
-//   console.log('👤 A user connected:', socket.id);
-
-//   socket.on('vlc-command', (data) => {
-//     console.log('Got command:', data.command);
-//     // Broadcast the command to all other connected clients
-//     socket.broadcast.emit('vlc-command', data);
-//   });
-
-//   socket.on('disconnect', () => {
-//     console.log('User disconnected:', socket.id);
-//   });
-// });
-
-// server.listen(PORT, () => {
-//   console.log(`HTTP and Socket.IO server running at http://localhost:${PORT}`);
-// });
-
-
 // server.js
-const { Server } = require('socket.io');
 const express = require('express');
 const http = require('http');
+const { Server } = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
 
+// Setup Socket.IO with CORS enabled
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "*", // Allow all origins (safe for now, limit later)
     methods: ["GET", "POST"]
   }
 });
 
-// Serve a simple status page
+// Simple status endpoint
 app.get('/', (req, res) => {
-  res.send('✅ VLC Sync Server is running!');
+  res.send('✅ VLC Sync Server is running');
 });
 
-// Socket.IO logic
+// Handle connections
 io.on('connection', (socket) => {
-  console.log('👤 A user connected:', socket.id);
+  console.log('👤 User connected:', socket.id);
 
   socket.on('vlc-command', (data) => {
     console.log('🔁 Command received:', data.command);
@@ -82,8 +33,8 @@ io.on('connection', (socket) => {
   });
 });
 
-// Dynamic port for Replit or localhost fallback
+// Use dynamic port for Render or default to 3000 locally
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server listening on http://localhost:${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
